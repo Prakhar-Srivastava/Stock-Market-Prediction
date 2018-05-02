@@ -93,6 +93,8 @@ class Search extends React.Component{
 }
 class Main extends React.Component{
 	render(){
+		console.log(loadjson)
+		loadjson()
 		return(e(Search)
 	)
 	}

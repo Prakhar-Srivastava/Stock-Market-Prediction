@@ -16,6 +16,18 @@
 	<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
 	<script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
+	<script>
+			var indian=[];
+			const loadjson=()=>fetch("{{url_for('static',filename='js/indian-min.json')}}").then(response=>{
+					//console.log(response.json());
+					response.json().then((data)=>{indian=data;
+					//console.log(indian);
+					});
+				}).catch(resp=>{
+					console.log('Some error occured while fetching...');
+				})
+			//window.onload=e=>loadjson()
+			</script>
 </head>
 
 <body>
@@ -106,21 +118,6 @@
 	<canvas id='chart' height="400px" width="800px"></canvas>
 	<script src="{{ url_for('static',filename='js/reactapp.js') }}"></script>
 	<script src="{{ url_for('static',filename='js/main.js') }}"></script>
-	<script>
-	var indian=[];
-	try{
-		fetch("{{url_for('static',filename='js/indian-min.json')}}").then(response=>{
-			//console.log(response.json());
-			response.json().then((data)=>{indian=data;
-			//console.log(indian);
-			});
-		}).catch(resp=>{
-			console.log('Some error occured while fetching...');
-		})
-	}catch(e){
-		console.log(e);
-	}
-	</script>
 </body>
 
 </html>
