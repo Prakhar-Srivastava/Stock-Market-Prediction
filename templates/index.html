@@ -1,0 +1,126 @@
+<!doctype HTML>
+<html lang="en-US">
+
+<head>
+	<title>Stock Markets</title>
+	<meta charset="UTF-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="Author" content="Prakhar">
+	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7, IE=9">
+	<link href="{{ url_for('static',filename='css/main.css') }}" type="text/css" rel="stylesheet">
+	<link href="{{ url_for('static',filename='css/main.css') }}" type="text/css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+	<link href="https://fonts.googleapis.com/css?family=Trocchi" rel="stylesheet">
+	<script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+	<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+	<script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
+</head>
+
+<body>
+	<header id="bar">
+		<div class="hdrnav">
+		<div class="slidingDiv">
+			<div id="menucontainer" title="Menu">
+				<div id="top"></div>
+				<div id="bot"></div>
+			</div>
+			<div class="slidingDiv-lower" id="menu_cap">Menu</div>
+		</div>
+		<a class="slidingDiv">
+			<i class="fa fa-search" aria-hidden="true"></i>
+			<span class="slidingDiv-lower">SEARCH</span>
+		</a>
+		<a class="slidingDiv">
+			<i class="fa fa-archive" aria-hidden="true"></i>
+			<span class="slidingDiv-lower">PRODUCTS</span>
+		</a>
+		<a class="slidingDiv">
+			<i class="fa fa-line-chart" aria-hidden="true" style="color: darkorange; font-size: 1.5em"></i>
+			<span class="slidingDiv-lower">STOCKS</span>
+		</a>
+		<a class="slidingDiv">
+			<i class="fa fa-usd" aria-hidden="true"></i>
+			<span class="slidingDiv-lower">PRICING</span>
+		</a>
+		<a class="slidingDiv">
+			<i class="fa fa-phone" aria-hidden="true"></i>
+			<span class="slidingDiv-lower">SUPPORT</span>
+		</a>
+		</div>
+		<div id="menu">
+			<h1 class="company_name stroke">Stocks</h1>
+			<hr class="lined">
+			<ul>
+				<li class="menuitem">home
+					<hr class="lined-animated">
+				</li>
+				<li class="menuitem">news
+					<hr class="lined-animated">
+				</li>
+				<li class="menuitem">markets
+					<hr class="lined-animated">
+				</li>
+				<li class="menuitem">commodities
+					<hr class="lined-animated">
+				</li>
+				<li class="menuitem">currency
+					<hr class="lined-animated">
+				</li>
+				<li class="menuitem">game changers
+					<hr class="lined-animated">
+				</li>
+			</ul>
+		</div>
+	</header>
+	<div class="background">
+		<svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="442 -1286.9 1420.1 1286.7" id="beam-1" width="100%" height="100%"
+		 class="bg-svg">
+			<defs>
+				<linearGradient id="footer-beam_linear-gradient" x1="2165.24657" y1="111.57332" x2="994.20727" y2="24.51092" gradientUnits="userSpaceOnUse">
+					<stop offset="0" stop-color="darkred"></stop>
+					<stop offset="1" stop-color="darkorange"></stop>
+				</linearGradient>
+				<linearGradient id="footer-beam_linear-gradient-2" x1="176.94293" y1="687.87382" x2="614.98674" y2="45.80961" gradientUnits="userSpaceOnUse">
+					<stop offset="0" stop-color="#fdef3b">
+					</stop>
+					<stop offset="1" stop-color="#f47b3e"></stop>
+				</linearGradient>
+			</defs>
+			<g>
+				<polygon fill="url(#footer-beam_linear-gradient-2)" points="1091.2,-227.6 1440.5,-177.6 1481.9,-164.3 1453.6,-212.1 1156,-290.6  ">
+				</polygon>
+				<polygon fill="url(#footer-beam_linear-gradient)" points="1018.6,-247.1 1340.8,-0.2 1424.1,-103.8 1105.7,-286  ">
+				</polygon>
+				<polygon fill="url(#footer-beam_linear-gradient)" points="1658.2,-462.4 1275,-82.1 1340.8,-0.2 1847,-451.1 1806.3,-548.4  ">
+				</polygon>
+				<polygon fill="url(#footer-beam_linear-gradient)" points="1862.1,-620.8 1847,-451.1 569.2,-73 555.6,-293.5  "></polygon>
+				<polygon fill="url(#footer-beam_linear-gradient-2)" points="1387.2,-1209.1 1701.9,-1286.9 1847,-959.1 569.2,-73 442,-253.4">
+				</polygon>
+			</g>
+		</svg>
+	</div>
+	<div id="root">
+	</div>
+	<canvas id='chart' height="400px" width="800px"></canvas>
+	<script src="{{ url_for('static',filename='js/reactapp.js') }}"></script>
+	<script src="{{ url_for('static',filename='js/main.js') }}"></script>
+	<script>
+	var indian=[];
+	try{
+		fetch("{{url_for('static',filename='js/indian-min.json')}}").then(response=>{
+			//console.log(response.json());
+			response.json().then((data)=>{indian=data;
+			//console.log(indian);
+			});
+		}).catch(resp=>{
+			console.log('Some error occured while fetching...');
+		})
+	}catch(e){
+		console.log(e);
+	}
+	</script>
+</body>
+
+</html>
