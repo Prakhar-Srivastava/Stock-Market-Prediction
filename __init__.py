@@ -1,67 +1,124 @@
 from flask import Flask, url_for, render_template, redirect, request, jsonify
+from flask_cors import CORS
+from bson.json_util import dumps
+from flask_pymongo import PyMongo
 import json as js
 import requests as rq
-from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
-import sklearn.linear_model as linmod
-from sklearn.svm import SVR
-from sklearn import preprocessing
-import numpy as np
 from pprint import pprint
-import re
-scale_ = preprocessing.scale
-
-app = Flask(__name__.split('.')[0])
+from Crypto.Cipher import AES
+app = Flask(__name__)
+CORS(app)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+app.config['MONGO_DBNAME']='news'
+#app.config['MONGO_URI']='mongo://prakhar@localhost:2701/newdb'
+mongo=None
+users=None
+with app.app_context():
+	global mongo,users
+	mongo=PyMongo(app)
+	users=mongo.db.newdb.find()
+class Admin:
+	def __init__(self):
+		print 'New Admin logged in'
+	def edit_news():
+		print 'edit news'
+	def push_to_database(collection=None,contentType=None):
+		print 'push a news to the database'
+	def push_to_web():
+		print 'publish a news to website'
+	def add_user():
+		print 'Add a new user'
+	def review_news():
+		print 'reviewing news'
+	def delete_news():
+		print 'deleting a news'
+	def delete_user():
+		print 'deleting user'
+class Moderator:
+	def __init__(self):
+		print 'new moderator logon'
+	def push_to_database(collection=None,contentType=None):
+		print 'push a news to the database'
+	def push_to_web():
+		print 'publish a news to website'
+	def review_news():
+		print 'reviewing news'
+	def delete_news():
+		print 'deleting a news'
+	def edit_news():
+		print 'edit news'
+	def write_news():
+		print 'writing a new news'
+class Client:
+	def __init__(self):
+		print 'new client login'
+	def show_news(step=0):
+		print 'showing paginated news with page {}'.format(step)
+	def push_to_database(collection=None,contentType=None):
+		print 'push a news to be verified'
+	def write_news():
+		print 'writing a new news'
+class Editor:
+	def __init__(slef):
+		print 'new editor logon'
+	def show_news(step=0):
+		print 'showing paginated news with page {}'.format(step)
+	def push_to_database(collection=None,contentType=None):
+		print 'push a news to be verified'
+	def write_news():
+		print 'writing a new news'
+	def push_to_web():
+		print 'publish a news to website'
+	def review_news():
+		print 'reviewing news'
 
+class NewUser:
+	def __init__(self):
+		self.data={
+			'name':'Anonumous User',
+			'mode':-1
+		}
+		print 'an anonymous visitor'
+	def show_news(step=0):
+		print 'showing paginated news with page {}'.format(step)
+	def sign_up():
+		print 'creating a new account'
+	
+
+def decode_key(ar):
+	first_garbage=ar[0]==49
+	read_from=len(ar)/2+ar[1] if first_garbage else 2+ar[1]
+	#read_from=first_garbage?ar.length/2+ar[1]:2+ar[1]
+	s=''
+	for i in range(len(ar)/2-ar[1]):
+		s+=chr(ar[read_from+i])
+	next=read_from-ar[1]
+	while next < read_from :
+		s+=chr(ar[next])
+		next+=1
+	return s
 
 @app.route('/')
 def main_page():
-	return render_template('index.html')
+	usr=NewUser()
+	return jsonify(usr.data)
 
 
-def split(ar):
-	X = np.array([])
-	for i in ar[1:]:
-		X = np.append(X, float(i))
-	return (X, float(ar[0]))
+@app.route('/users/<username>',methods=['POST'])
+def user_info(username):
+	if request.method=='POST':
+		if(username=='anonym'):
+			return jsonify(NewUser().data)
+		global mongo
+		data=dict(js.loads(request.data))
+		print type(data)
+		pprint(data)
+		print decode_key(data[u'key'])
+		usr=mongo.db.users.find_one({'userID':username})
+		meta=mongo.db.users_meta.find_one({'userID':username})
+		usr_d=dumps(usr)
+		#print 'Type of usr is: {} and type of usr_d is: {}'.format(type(usr),type(usr_d))
+		#pprint(usr)
+		#print usr_d
+		return jsonify(js.loads(usr_d))
 
-
-def formatX(X):
-	s_x = str(X).replace('\n', '').replace('] [', '],[').replace(
-		' ]', ']').replace('[ ', '[').replace('[[ ', '[[').replace('. ', '.0')
-	v = re.sub(' +', ' ', s_x)
-	v = re.sub(r'\[ +', '[', v)
-	v = re.sub(' ', ',', v)
-	v = v.replace(',]', ']')
-	return v
-
-
-def formaty(y):
-	return str(y).replace('\n', '').replace('.', '.0,').replace('.0,]', '.0]')
-
-
-@app.route('/predict/', methods=['POST'])
-def predict():
-	X = np.empty((4,), dtype='float64')
-	y = np.array([], dtype='float64')
-	if request.method == 'POST':
-		sym = js.loads(request.data)['symbol'].upper()
-		print sym
-		d = rq.get('https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={}&interval=5min&apikey=6JPELGYIYAQB0HUP'.format(sym)).json()
-		for data in d['Time Series (5min)'].values():
-			s = split(data.values())
-			X = np.vstack((X, s[0]))
-			y = np.append(y, s[1])
-
-		v = formatX(X[1:])
-		s_y = formaty(y)
-		X_train, X_test, y_train, y_test = train_test_split(X[1:], y)
-		clf = SVR(C=1e4, epsilon=1e-9, kernel='linear', gamma=5e7)
-		clf.fit(X_train, y_train)
-		pred = clf.predict(X_test)
-		pred = formatX(pred)
-		print pred
-		k = {'X': v, 'y': s_y, 'pred': pred}
-		pprint(k)
-		return jsonify(k)
